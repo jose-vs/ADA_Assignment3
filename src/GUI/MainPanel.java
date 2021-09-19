@@ -2,6 +2,8 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
@@ -17,16 +19,67 @@ public class MainPanel extends JPanel {
     private final int X_GAP = 10;
     private final int Y_GAP = 75;
 
+    // Fields
     Node root = null;
-
     int[] sample = {50, 24, 20, 30, 19, 70, 65, 80, 64, 85};
+
+    private SpringLayout layout;
+    private JTextField numberInput;
+    private JButton btnAdd;
 
     public MainPanel() {
         setBackground(Color.DARK_GRAY);
 
+        // Populate with dummy data
         for (Integer num : sample) {
             addNode(new Node(num));
         }
+
+        initLayout();
+
+        numberInput = new JTextField(0);
+        numberInput.setPreferredSize(new Dimension(100, 30));
+        btnAdd = new JButton("Add");
+        btnAdd.setPreferredSize(new Dimension(100, 30));
+        btnAdd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (numberInput.getText().length() > 0) {
+                    try {
+                        int number = Integer.parseInt(numberInput.getText());
+                        addNodeGUI(number);
+                        numberInput.setText("");
+                    } catch (NumberFormatException err) {
+                        JOptionPane.showMessageDialog(getParent(),
+                                "Input must be a valid whole number.",
+                                "Number Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+        add(numberInput);
+        add(btnAdd);
+
+        setLayoutConstraints();
+    }
+
+    private void initLayout() {
+        layout = new SpringLayout();
+        setLayout(layout);
+    }
+
+    private void setLayoutConstraints() {
+        layout.putConstraint(SpringLayout.WEST, numberInput, 10, SpringLayout.WEST, this);
+        layout.putConstraint(SpringLayout.SOUTH, numberInput, -10, SpringLayout.SOUTH, this);
+        layout.putConstraint(SpringLayout.WEST, btnAdd, 10, SpringLayout.EAST, numberInput);
+        layout.putConstraint(SpringLayout.SOUTH, btnAdd, -10, SpringLayout.SOUTH, this);
+    }
+
+    private void addNodeGUI(int number) {
+        addNode(new Node(number));
+        repaint();
+        revalidate();
     }
 
     private void addNode(Node node) {
@@ -40,14 +93,14 @@ public class MainPanel extends JPanel {
                     if (current.right == null) {
                         current.right = node;
                         isDone = true;
-                    }
-                    else current = current.right;
+                    } else current = current.right;
                 } else if (current.element.compareTo(node.element) > 0) {
                     if (current.left == null) {
                         current.left = node;
                         isDone = true;
-                    }
-                    else current = current.left;
+                    } else current = current.left;
+                } else {
+                    isDone = true;
                 }
             }
         }
