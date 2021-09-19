@@ -10,5 +10,9 @@ package GUI;
  * @author jcvsa
  */
 public class Main {
-    
+    public static void main(String[] args) {
+        MainPanel mainPanel = new MainPanel();
+        MainFrame frame = new MainFrame("Binary Search Tree", mainPanel);
+        frame.setVisible(true);
+    }
 }
