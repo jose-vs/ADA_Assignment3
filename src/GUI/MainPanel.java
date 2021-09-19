@@ -5,16 +5,17 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.Stack;
 
 public class MainPanel extends JPanel {
 
     // Constants
-    private final int SQUARE_WIDTH = 120;
-    private final int SQUARE_HEIGHT = 60;
+    private final int SQUARE_WIDTH = 60;
+    private final int HALF_SQUARE_WIDTH = SQUARE_WIDTH / 2;
+    private final int SQUARE_HEIGHT = 30;
     private final int START_X = (MainFrame.APP_WIDTH / 2) - (SQUARE_WIDTH / 2);
     private final int START_Y = 50;
-    private final int GAP = 30;
+    private final int X_GAP = 10;
+    private final int Y_GAP = 75;
 
     Node root = null;
 
@@ -63,18 +64,38 @@ public class MainPanel extends JPanel {
     private void drawTree(Graphics g) {
         if (root == null) return;
 
+        Queue<int[]> previousLevelPoints = new LinkedList<>();
         Queue<Node> stack = new LinkedList<>();
         Node current = root;
         stack.offer(current);
 
+        int linesDrawn = 0;
         int startX = START_X;
         int startY = START_Y;
+        int level = 0;
         int maxNodeForLevel = 1;
         int nNodesForLevel = 0;
         while (!(stack.size() == maxNodeForLevel && stackAllNull(stack))) {
             Node popped = stack.poll();
 
+            previousLevelPoints.offer(new int[]{level, startX, startY});
+
+            // Draw node
             g.drawRect(startX, startY, SQUARE_WIDTH, SQUARE_HEIGHT);
+
+            // Draw lines
+            if (!previousLevelPoints.isEmpty() && previousLevelPoints.peek()[0] == level - 1) {
+                int[] point = previousLevelPoints.peek();
+                g.drawLine(point[1] + HALF_SQUARE_WIDTH, point[2] + SQUARE_HEIGHT, startX + HALF_SQUARE_WIDTH, startY);
+                linesDrawn++;
+            }
+
+            // Pop after 2 children nodes are connected to parent.
+            if (linesDrawn == 2) {
+                linesDrawn = 0;
+                previousLevelPoints.poll();
+            }
+
             if (popped == null) {
                 stack.offer(null);
                 stack.offer(null);
@@ -85,13 +106,18 @@ public class MainPanel extends JPanel {
                 g.drawString(popped.element.toString(), startX + 10, startY + (SQUARE_HEIGHT / 2));
             }
 
-            startX += SQUARE_WIDTH + GAP;
+            if (nNodesForLevel % 2 == 0) {
+                startX += (SQUARE_WIDTH + X_GAP);
+            } else {
+                startX += SQUARE_WIDTH + X_GAP;
+            }
             nNodesForLevel++;
             if (nNodesForLevel == maxNodeForLevel) {
+                level++;
                 maxNodeForLevel *= 2;
                 nNodesForLevel = 0;
-                startY += SQUARE_HEIGHT + GAP;
-                startX = START_X - ((SQUARE_WIDTH + GAP) * maxNodeForLevel / 2 ) + (SQUARE_WIDTH / 2);
+                startY += SQUARE_HEIGHT + Y_GAP;
+                startX = START_X - ((SQUARE_WIDTH + X_GAP) * maxNodeForLevel / 2) + SQUARE_WIDTH / 2;
             }
         }
     }
