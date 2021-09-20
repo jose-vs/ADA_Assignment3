@@ -18,14 +18,14 @@ public class MainPanel extends JPanel {
     private final int START_Y = 50;
     private final int X_GAP = 10;
     private final int Y_GAP = 75;
-
+    private final JLabel leftChildLegend;
+    private final JLabel rightChildLegend;
+    private final JTextField numberInput;
+    private final JButton btnAdd;
     // Fields
     Node root = null;
     int[] sample = {50, 24, 20, 30, 19, 70, 65, 80, 64, 85};
-
     private SpringLayout layout;
-    private JTextField numberInput;
-    private JButton btnAdd;
 
     public MainPanel() {
         setBackground(Color.DARK_GRAY);
@@ -37,6 +37,12 @@ public class MainPanel extends JPanel {
 
         initLayout();
 
+        leftChildLegend = new JLabel("Left Child line is color green.");
+        leftChildLegend.setFont(new Font("Impact", Font.PLAIN, 18));
+        leftChildLegend.setForeground(Color.GREEN);
+        rightChildLegend = new JLabel("Right Child line is color orange.");
+        rightChildLegend.setFont(new Font("Impact", Font.PLAIN, 18));
+        rightChildLegend.setForeground(Color.ORANGE);
         numberInput = new JTextField(0);
         numberInput.setPreferredSize(new Dimension(100, 30));
         btnAdd = new JButton("Add");
@@ -58,6 +64,8 @@ public class MainPanel extends JPanel {
                 }
             }
         });
+        add(leftChildLegend);
+        add(rightChildLegend);
         add(numberInput);
         add(btnAdd);
 
@@ -70,6 +78,10 @@ public class MainPanel extends JPanel {
     }
 
     private void setLayoutConstraints() {
+        layout.putConstraint(SpringLayout.WEST, leftChildLegend, 10, SpringLayout.WEST, this);
+        layout.putConstraint(SpringLayout.NORTH, leftChildLegend, 10, SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.WEST, rightChildLegend, 10, SpringLayout.WEST, this);
+        layout.putConstraint(SpringLayout.NORTH, rightChildLegend, 10, SpringLayout.SOUTH, leftChildLegend);
         layout.putConstraint(SpringLayout.WEST, numberInput, 10, SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.SOUTH, numberInput, -10, SpringLayout.SOUTH, this);
         layout.putConstraint(SpringLayout.WEST, btnAdd, 10, SpringLayout.EAST, numberInput);
@@ -111,6 +123,7 @@ public class MainPanel extends JPanel {
         super.paintComponent(g);
 
         g.setColor(Color.WHITE);
+        g.setFont(new Font("Impact", Font.PLAIN, 18));
         drawTree(g);
     }
 
@@ -133,13 +146,20 @@ public class MainPanel extends JPanel {
 
             previousLevelPoints.offer(new int[]{level, startX, startY});
 
-            // Draw node
-            g.drawRect(startX, startY, SQUARE_WIDTH, SQUARE_HEIGHT);
-
             // Draw lines
+            // Green line means left child connected
+            // Orange line means right child connected
+            if (linesDrawn == 0) {
+                g.setColor(Color.GREEN);
+            } else {
+                g.setColor(Color.ORANGE);
+            }
+
             if (!previousLevelPoints.isEmpty() && previousLevelPoints.peek()[0] == level - 1) {
                 int[] point = previousLevelPoints.peek();
-                g.drawLine(point[1] + HALF_SQUARE_WIDTH, point[2] + SQUARE_HEIGHT, startX + HALF_SQUARE_WIDTH, startY);
+                if (popped != null) {
+                    g.drawLine(point[1] + HALF_SQUARE_WIDTH, point[2] + SQUARE_HEIGHT, startX + HALF_SQUARE_WIDTH, startY);
+                }
                 linesDrawn++;
             }
 
@@ -149,14 +169,19 @@ public class MainPanel extends JPanel {
                 previousLevelPoints.poll();
             }
 
+            // Revert color back to white to draw nodes and strings.
+            g.setColor(Color.WHITE);
+
             if (popped == null) {
                 stack.offer(null);
                 stack.offer(null);
-                g.drawString("NIL", startX + 10, startY + (SQUARE_HEIGHT / 2));
             } else {
                 stack.offer(popped.left);
                 stack.offer(popped.right);
-                g.drawString(popped.element.toString(), startX + 10, startY + (SQUARE_HEIGHT / 2));
+
+                // Draw node
+                g.drawRect(startX, startY, SQUARE_WIDTH, SQUARE_HEIGHT);
+                g.drawString(popped.element.toString(), startX + 20, startY + (SQUARE_HEIGHT / 2) + 10);
             }
 
             if (nNodesForLevel % 2 == 0) {
