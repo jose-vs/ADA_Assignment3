@@ -42,6 +42,18 @@ public class Node<E> {
     public E getElement() {
         return element;
     }
+
+    public void setLeft(Node left) {
+        this.left = left;
+    }
+
+    public void setRight(Node right) {
+        this.right = right;
+    }
+    
+    public void setElement(E element) {
+        this.element = element;
+    }
     
     
     
