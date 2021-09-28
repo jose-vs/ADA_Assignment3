@@ -16,31 +16,31 @@ import java.util.SortedSet;
 /**
  * @author jcvsa
  */
-public class BST<E> extends AbstractSet<E> implements SortedSet<E> {
+public class BinarySearchTree<E> extends AbstractSet<E> implements SortedSet<E> {
 
     private int numElements;
     protected Node rootNode;
     private Comparator<? super E> comparator;
     private E from, to;
 
-    public BST() {
+    public BinarySearchTree() {
         super();
         numElements = 0;
     }
 
-    public BST(Collection<? extends E> c) {
+    public BinarySearchTree(Collection<? extends E> c) {
         this();
         for (E element : c) {
             add(element);
         }
     }
 
-    public BST(Comparator<? super E> comparator) {
+    public BinarySearchTree(Comparator<? super E> comparator) {
         this();
         this.comparator = comparator;
     }
 
-    public BST(SortedSet<E> s) {
+    public BinarySearchTree(SortedSet<E> s) {
         this();
         this.comparator = s.comparator();
         for (E element : s) {
@@ -48,7 +48,7 @@ public class BST<E> extends AbstractSet<E> implements SortedSet<E> {
         }
     }
 
-    private BST(Node rootNode,
+    private BinarySearchTree(Node rootNode,
             Comparator<? super E> comparator, E fromElement, E toElement) {
         this(comparator);
         this.rootNode = rootNode;
@@ -213,6 +213,7 @@ public class BST<E> extends AbstractSet<E> implements SortedSet<E> {
 
     // overridden method with an efficient O(log n) search algorithm
     // rather than the superclasses O(n) linear search using iterator
+    @Override
     public boolean contains(Object o) {
         boolean found = false;
         E element = (E) o; // unchecked, could throw exception
@@ -276,7 +277,7 @@ public class BST<E> extends AbstractSet<E> implements SortedSet<E> {
 
     @Override
     public SortedSet<E> subSet(E from, E to) {
-        return new BST<>(rootNode, comparator, from,
+        return new BinarySearchTree<>(rootNode, comparator, from,
                 to);
     }
 
@@ -402,7 +403,7 @@ public class BST<E> extends AbstractSet<E> implements SortedSet<E> {
     }
 
     public static void main(String[] args) {  // create the binary search tree
-        SortedSet<String> tree = new BST<String>();
+        SortedSet<String> tree = new BinarySearchTree<String>();
         tree.add("cow");
         tree.add("fly");
         tree.add("dog");
