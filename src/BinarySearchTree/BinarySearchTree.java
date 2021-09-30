@@ -277,8 +277,7 @@ public class BinarySearchTree<E> extends AbstractSet<E> implements SortedSet<E> 
 
     @Override
     public SortedSet<E> subSet(E from, E to) {
-        return new BinarySearchTree<>(rootNode, comparator, from,
-                to);
+        return new BinarySearchTree<E>(rootNode, comparator, from, to);
     }
 
     @Override
@@ -358,6 +357,7 @@ public class BinarySearchTree<E> extends AbstractSet<E> implements SortedSet<E> 
             return (E) greatestYetNode.getElement();
         }
     }
+    public Node getRootNode() { return rootNode; }
 
     @Override
     public String toString() {
@@ -399,7 +399,6 @@ public class BinarySearchTree<E> extends AbstractSet<E> implements SortedSet<E> 
         public void remove() {
             throw new UnsupportedOperationException();
         }
-
     }
 
     public static void main(String[] args) {  // create the binary search tree
@@ -430,5 +429,4 @@ public class BinarySearchTree<E> extends AbstractSet<E> implements SortedSet<E> 
         System.out.println("first element in subtree: " + subtree.first());
         System.out.println("last element in subtree: " + subtree.last());
     }
-
 }

@@ -6,9 +6,13 @@
 package BalancedPersistentDynamicSet;
 
 /**
+ *  Uses Red Black Tree to keep it balanced.
  *
  * @author jcvsa
  */
 public class BPDS {
-    
+
+    public BPDS() {
+
+    }
 }

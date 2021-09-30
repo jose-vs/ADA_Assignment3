@@ -5,24 +5,35 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ca5029d0-00b0-4d48-97e6-436fc12a654a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/Assignment3.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nbproject/private/private.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/BinarySearchTree/BinarySearchTree.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/BinarySearchTree/BinarySearchTreeADT.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/BinarySearchTree/Node.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PersistentDynamicSet/PersistentDynamicSet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Test/BinarySearchTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/BinarySearchTree/BST.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PersistentDynamicSet/PDS.java" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/BalancedPersistentDynamicSet/RBTNode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/ADA_Assignment3/BalancedPersistentDynamicSet/BPDS.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/ADA_Assignment3/BalancedPersistentDynamicSet/BPDS.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/ADA_Assignment3/BinarySearchTree/BST.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/ADA_Assignment3/GUI/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/ADA_Assignment3/GUI/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/ADA_Assignment3/GUI/MainPanel$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/ADA_Assignment3/GUI/MainPanel$Node.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/ADA_Assignment3/GUI/MainPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/ADA_Assignment3/GUI/MainPanel.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/ADA_Assignment3/GUI/MenuPanel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/ADA_Assignment3/PersistentDynamicSet/PDS.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BalancedPersistentDynamicSet/BPDS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BalancedPersistentDynamicSet/BPDS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BinarySearchTree/BinarySearchTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BinarySearchTree/BinarySearchTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BinarySearchTree/BinarySearchTreeADT.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BinarySearchTree/BinarySearchTreeADT.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GUI/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUI/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GUI/MainPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUI/MainPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GUI/MenuPanel.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -35,9 +46,23 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../Assignment2" />
   </component>
   <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="GUI.Main" />
+      <module name="ADA_Assignment3" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="GUI.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="JetRunConfigurationType">
       <method v="2">
         <option name="Make" enabled="true" />
@@ -49,6 +74,11 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
