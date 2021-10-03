@@ -7,9 +7,7 @@ package PersistentDynamicSet;
 
 import BinarySearchTree.BinarySearchTree;
 import BinarySearchTree.Node;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -21,72 +19,92 @@ import java.util.Stack;
  */
 public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree {
 
-    private List<Node> versions; 
+    public List<Node> versions;
     private Stack<Node> buildVersion;
-    private Node currentVersion;
-    
-    public PersistentDynamicSet() { 
+
+    public PersistentDynamicSet() {
         super();
-        versions = new ArrayList<>();
+        versions = new LinkedList<>();
         buildVersion = new Stack<>();
     }
-    
+
     public PersistentDynamicSet(Collection<? extends E> c) {
         super(c);
         versions = new LinkedList<>();
     }
-    
+
     @Override
-    protected void saveInsert(Node current, Node left, Node right) { 
-        Node clone = current.clone();
-//        clone.setLeft(left);
-//        clone.setRight(right);
-//        currentVersion = clone;
-        buildVersion.add(clone);
+    protected void saveInsert(Node current, Node left, Node right) {
+        current.setLeft(left);
+        current.setRight(right);
+        buildVersion.add(current);
     }
-    
+
     @Override
-    protected void saveVersion(){ 
-//        versions.add(currentVersion);
-//        buildVersion.clear();
-        Node node = buildVersion.pop();
-        buildVersion.clear();
+    protected void saveVersion() {
+
+        System.out.println("________________BUILDING________________");
+        Node newVersion = buildVersion.pop();
+        while (!buildVersion.isEmpty()) {
+            Node temp = buildVersion.pop();
+
+            if (temp.getLeft() == flag) {
+                temp.setLeft(newVersion);
+            } else if (temp.getRight() == flag) {
+                temp.setRight(newVersion);
+            }
+
+            newVersion = temp;
+
+        }
+
         System.out.println("____________CURRENT____________");
-        System.out.println("Node: " + toString());
-        System.out.println("NodeSize: " + getSize(node));
-        System.out.println(toString(node));
-        
-        versions.add(node);
+        System.out.println("NodeSize: " + getSize(newVersion));
+        System.out.println(toString(newVersion));
+        System.out.println(hashCodeString(newVersion));
+        versions.add(newVersion);
 
     }
-    
+
     public static void main(String[] args) {
         PersistentDynamicSet<Integer> tree = new PersistentDynamicSet<>();
 
-        tree.insert("cow");
-        tree.insert("fly");
-        tree.insert("dog");
-        tree.insert("bat");
-        tree.insert("fox");
-        tree.insert("cat");
-        tree.insert("eel");
-        tree.insert("ant");
-        tree.insert("ape");
-        tree.insert("pig");
-        tree.insert("owl");
-        tree.insert("bee");
-        tree.insert("rat");
-        tree.insert("eel");
+        tree.insert(5);
+        tree.insert(4);
+        tree.insert(9);
+        tree.insert(7);
+        tree.insert(10);
+        tree.insert(6);
+        tree.insert(2);
+        tree.insert(3);
+//        tree.insert("cow");
+//        tree.insert("fly");
+//        tree.insert("dog");
+//        tree.insert("bat");
+//        tree.insert("fox");
+//        tree.insert("cat");
+//        tree.insert("eel");
+//        tree.insert("ant");
+//        tree.insert("ape");
+//        tree.insert("pig");
+//        tree.insert("owl");
+//        tree.insert("bee");
+//        tree.insert("rat");
 
         System.out.println("Original Tree: " + tree);
         System.out.println("Size: " + tree.size());
+
+        System.out.println();
+        System.out.println("________________________MAIN________________________");
+        System.out.println();
         
-        for(Node e : tree.versions) { 
+        for (Node n : tree.versions) {
             System.out.println("____________CURRENT____________");
-            System.out.println("Node: " + e.toString());
-            System.out.println("NodeSize: " + tree.getSize(e));
-            System.out.println(tree.toString(e));
-        } 
+            System.out.println("NodeSize: " + tree.getSize(n));
+            System.out.println(tree.toString(n));
+            System.out.println(tree.hashCodeString(n));
+        }
+
     }
-    
+
 }

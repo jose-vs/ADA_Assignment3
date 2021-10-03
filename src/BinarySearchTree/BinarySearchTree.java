@@ -19,6 +19,8 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
     protected Node rootNode;
     protected boolean added;
     
+    protected Node flag = new Node(Flag.SAVE_NODE);
+    
     public BinarySearchTree() { 
         super();
         added = false;
@@ -51,21 +53,22 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
     private Node insertUtil(Node current, E element){ 
         if(current  == null) {
             Node node = new Node(element);
-            if (rootNode == null)
-                saveInsert(node, null, null);
+            saveInsert(node, null, null);
             
             return node;   
         }
         
         int compare = element.compareTo((E) current.getElement());
         
-        if(compare < 0)
+        if(compare < 0) {
+            saveInsert(new Node(current.getElement()), flag, current.getRight());
             current.setLeft(insertUtil(current.getLeft(), element));
 
-        else if (compare > 0)
+        } else if (compare > 0) {
+            saveInsert(new Node(current.getElement()), current.getLeft(), flag);
             current.setRight(insertUtil(current.getRight(), element));
-        
-        saveInsert(current, current.getLeft(), current.getRight());
+        }
+//        saveInsert(current, current.getLeft(), current.getRight());
       
         return current;
     }
@@ -215,10 +218,29 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
         return "Tree: " + rootNode;
     }
     
+    /**
+     * 
+     * @param node
+     * @return 
+     */
     public String toString(Node node) {
+        return "Node: " + node;
+    }
+    
+    /**
+     * 
+     * @param node
+     * @return 
+     */
+    public String hashCodeString(Node node) {
         return traverseInOrder(node); 
     }
     
+    /**
+     * 
+     * @param node
+     * @return 
+     */
     public String traverseInOrder(Node node){ 
         String s = "";
         
@@ -269,6 +291,10 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
             return iterator.next();
         }
         
+    }
+    
+    protected enum Flag { 
+        SAVE_NODE
     }
     
     public static void main(String[] args) {
