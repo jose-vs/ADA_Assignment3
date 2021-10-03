@@ -44,9 +44,23 @@ public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree
     protected void saveVersion() {
 
         System.out.println("________________BUILDING________________");
+
         Node newVersion = buildVersion.pop();
+
+        System.out.println("____________BOTTOM____________");
+        System.out.println("NodeSize: " + getSize(newVersion));
+        System.out.println("NodeElement: " + newVersion.getElement());
+        System.out.println(toString(newVersion));
+        System.out.println(hashCodeString(newVersion));
+
         while (!buildVersion.isEmpty()) {
             Node temp = buildVersion.pop();
+
+            System.out.println("____________CURRENT____________");
+            System.out.println("NodeSize: " + getSize(temp));
+            System.out.println("NodeElement: " + temp.getElement());
+            System.out.println(toString(temp));
+            System.out.println(hashCodeString(temp));
 
             if (temp.getLeft() == flag) {
                 temp.setLeft(newVersion);
@@ -58,10 +72,12 @@ public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree
 
         }
 
-        System.out.println("____________CURRENT____________");
+        System.out.println("____________NEW VERSION____________");
         System.out.println("NodeSize: " + getSize(newVersion));
+        System.out.println("NodeElement: " + newVersion.getElement());
         System.out.println(toString(newVersion));
         System.out.println(hashCodeString(newVersion));
+
         versions.add(newVersion);
 
     }
@@ -97,7 +113,7 @@ public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree
         System.out.println();
         System.out.println("________________________MAIN________________________");
         System.out.println();
-        
+
         for (Node n : tree.versions) {
             System.out.println("____________CURRENT____________");
             System.out.println("NodeSize: " + tree.getSize(n));
