@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package BinarySearchTree;
+package Test;
 
+import BinarySearchTree.Node;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Comparator;
@@ -16,31 +17,31 @@ import java.util.SortedSet;
 /**
  * @author jcvsa
  */
-public abstract class BinarySearchTreeADT<E> extends AbstractSet<E> implements SortedSet<E> {
+public class BST<E> extends AbstractSet<E> implements SortedSet<E> {
 
     private int numElements;
     protected Node rootNode;
     private Comparator<? super E> comparator;
     private E from, to;
 
-    public BinarySearchTreeADT() {
+    public BST() {
         super();
         numElements = 0;
     }
 
-    public BinarySearchTreeADT(Collection<? extends E> c) {
+    public BST(Collection<? extends E> c) {
         this();
         for (E element : c) {
             add(element);
         }
     }
 
-    public BinarySearchTreeADT(Comparator<? super E> comparator) {
+    public BST(Comparator<? super E> comparator) {
         this();
         this.comparator = comparator;
     }
 
-    public BinarySearchTreeADT(SortedSet<E> s) {
+    public BST(SortedSet<E> s) {
         this();
         this.comparator = s.comparator();
         for (E element : s) {
@@ -48,7 +49,7 @@ public abstract class BinarySearchTreeADT<E> extends AbstractSet<E> implements S
         }
     }
 
-    private BinarySearchTreeADT(Node rootNode,
+    private BST(Node rootNode,
             Comparator<? super E> comparator, E fromElement, E toElement) {
         this(comparator);
         this.rootNode = rootNode;
@@ -56,11 +57,114 @@ public abstract class BinarySearchTreeADT<E> extends AbstractSet<E> implements S
         this.to = toElement;
         this.numElements = countNodes(rootNode);
     }
-    
-    public abstract boolean add(E o);
-    public abstract boolean remove(Object o);
-    public abstract boolean contains(Object o);
 
+    public boolean add(E o) {
+
+        if (!withinView(o)) {
+            throw new IllegalArgumentException("Outside view");
+        }
+
+        Node<E> newNode = new Node(o);
+        boolean added = false;
+
+        if (rootNode == null) {
+            rootNode = newNode;
+            added = true;
+
+        } else {  // find where to add newNode
+            Node currentNode = rootNode;
+            boolean done = false;
+
+            while (!done) {
+                int comparison = compare(o, (E) currentNode.getElement());
+
+                if (comparison < 0) { // newNode is less than currentNode
+                    if (currentNode.getLeft() == null) {  // add newNode as leftChild
+                        currentNode.setLeft(newNode);
+                        done = true;
+                        added = true;
+
+                    } else {
+                        currentNode = currentNode.getLeft();
+                    }
+
+                } else if (comparison > 0) { //newNode is greater than currentNode
+                    if (currentNode.getRight() == null) {  // add newNode as rightChild
+                        currentNode.setRight(newNode);
+                        done = true;
+                        added = true;
+
+                    } else {
+                        currentNode = currentNode.getRight();
+                    }
+
+                } else if (comparison == 0) // newNode equal to currentNode
+                {
+                    done = true; // no duplicates in this binary tree impl.
+                }
+            }
+        }
+
+        if (added) {
+            numElements++;
+        }
+
+        return added;
+    }
+
+    public boolean remove(Object o) {
+        boolean removed = false;
+        E element = (E) o; // unchecked, could throw exception
+
+        if (!withinView(element)) {
+            throw new IllegalArgumentException("Outside view");
+        }
+
+        if (rootNode != null) {  // check if root to be removed
+            if (compare(element, (E) rootNode.getElement()) == 0) {
+                rootNode = makeReplacement(rootNode);
+                removed = true;
+            } else {  // search for the element o
+                Node parentNode = rootNode;
+                Node removalNode;
+                // determine whether to traverse to left or right of root
+                if (compare(element, (E) rootNode.getElement()) < 0) {
+                    removalNode = rootNode.getLeft();
+                } else // compare(element, rootNode.getElement())>0
+                {
+                    removalNode = rootNode.getRight();
+                }
+                while (removalNode != null && !removed) {  // determine whether the removalNode has been found
+                    int comparison = compare(element, (E) removalNode.getElement());
+                    if (comparison == 0) {
+                        if (removalNode == parentNode.getLeft()) {
+                            parentNode.setLeft(
+                                    makeReplacement(removalNode));
+                        } else // removalNode==parentNode.getRight()
+                        {
+                            parentNode.setRight(
+                                    makeReplacement(removalNode));
+                        }
+                        removed = true;
+                    } else // determine whether to traverse to left or right
+                    {
+                        parentNode = removalNode;
+                        if (comparison < 0) {
+                            removalNode = removalNode.getLeft();
+                        } else // comparison>0
+                        {
+                            removalNode = removalNode.getRight();
+                        }
+                    }
+                }
+            }
+        }
+        if (removed) {
+            numElements--;
+        }
+        return removed;
+    }
+    
     // helper method which removes removalNode (presumed not null) and
     // returns a reference to node that should take place of removalNode
     private Node makeReplacement(Node removalNode) {
@@ -108,6 +212,29 @@ public abstract class BinarySearchTreeADT<E> extends AbstractSet<E> implements S
         }
     }
 
+    // overridden method with an efficient O(log n) search algorithm
+    // rather than the superclasses O(n) linear search using iterator
+    @Override
+    public boolean contains(Object o) {
+        boolean found = false;
+        E element = (E) o; // unchecked, could throw exception
+        if (!withinView(element)) {
+            return false;
+        }
+        Node currentNode = rootNode;
+        while (!found && currentNode != null) {
+            int comparison = compare((E) currentNode.getElement(), element);
+            if (comparison == 0) {
+                found = true;
+            } else if (comparison < 0) {
+                currentNode = currentNode.getRight();
+            } else // comparison>0
+            {
+                currentNode = currentNode.getLeft();
+            }
+        }
+        return found;
+    }
 
     private boolean withinView(E element) {
         return !((from != null && compare(element, from) < 0)
@@ -151,7 +278,7 @@ public abstract class BinarySearchTreeADT<E> extends AbstractSet<E> implements S
 
     @Override
     public SortedSet<E> subSet(E from, E to) {
-        return new BinarySearchTreeADT<>(rootNode, comparator, from,
+        return new BST<>(rootNode, comparator, from,
                 to);
     }
 
@@ -274,6 +401,47 @@ public abstract class BinarySearchTreeADT<E> extends AbstractSet<E> implements S
             throw new UnsupportedOperationException();
         }
 
+    }
+
+    public static void main(String[] args) {  // create the binary search tree
+        BST<Integer> tree = new BST<>();
+//        tree.add("cow");
+//        tree.add("fly");
+//        tree.add("dog");
+//        tree.add("bat");
+//        tree.add("fox");
+//        tree.add("cat");
+//        tree.add("eel");
+//        tree.add("ant");
+        tree.add(8);
+        tree.add(5);
+        tree.add(7);
+        tree.add(3);
+        tree.add(2);
+        tree.add(6);
+        tree.add(9);
+        tree.add(1);
+        tree.add(3);
+        System.out.println("Original Tree: " + tree);
+        System.out.println("Size: " + tree.numElements);
+        tree.remove(5);
+        System.out.println("Modified Tree: " + tree);
+//        tree.remove("owl");
+//        tree.remove("cow");
+//        tree.add("owl");
+//        System.out.println("Modified Tree: " + tree);
+//        SortedSet<String> subtree = tree.subSet("cat", "fox");
+//        System.out.print("Subtree iteration: ");
+//        Iterator<String> i = subtree.iterator();
+//        while (i.hasNext()) {
+//            System.out.print(i.next());
+//            if (i.hasNext()) {
+//                System.out.print(", ");
+//            }
+//        }
+//        System.out.println();
+//        System.out.println("first element in subtree: " + subtree.first());
+//        System.out.println("last element in subtree: " + subtree.last());
     }
 
 }

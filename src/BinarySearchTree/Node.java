@@ -10,11 +10,21 @@ package BinarySearchTree;
  * @author jcvsa
  */
 public class Node<E> {
-    private Node left, right; 
+    private Node<E> left, right; 
     private E element; 
     
     public Node(E element) { 
         this.element = element; 
+    }
+    
+    public Node(E element, Node<E> left, Node<E> right) { 
+        this.element = element;
+        this.left = left; 
+        this.right = right;
+    }
+    
+    public Node clone() { 
+        return new Node<E>(this.element, this.left, this.right);
     }
     
     @Override
