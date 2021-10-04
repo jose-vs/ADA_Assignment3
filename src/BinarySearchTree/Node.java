@@ -23,8 +23,10 @@ public class Node<E> {
         this.right = right;
     }
     
-    public Node clone() { 
-        return new Node<E>(this.element, this.left, this.right);
+ 
+    @Override
+    public Node clone()  { 
+        return new Node<>(this.element, this.left, this.right);
     }
     
     @Override

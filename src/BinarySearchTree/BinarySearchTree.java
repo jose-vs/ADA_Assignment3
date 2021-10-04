@@ -16,163 +16,168 @@ import java.util.LinkedList;
  * @param <E>
  */
 public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
+
     protected Node rootNode;
     protected boolean added;
-    
+
     protected Node flag = new Node(Flag.SAVE_NODE);
-    
-    public BinarySearchTree() { 
+
+    public BinarySearchTree() {
         super();
         added = false;
     }
-    
+
     public BinarySearchTree(Collection<? extends E> c) {
         this();
         for (E element : c) {
             insert(element);
         }
     }
-    
+
     /**
-     * 
-     * @param element 
+     *
+     * @param element
      */
-    public void insert(E element) { 
-        added = false;
-        
-        rootNode = insertUtil(rootNode, element);
-        saveVersion();
+    public void insert(E element) {
+        updateVersion(insertUtil(rootNode != null ? rootNode : null, element));
     }
-    
+
     /**
-     * 
+     *
      * @param current
      * @param element
-     * @return 
+     * @return
      */
-    private Node insertUtil(Node current, E element){ 
-        if(current  == null) {
+    private Node insertUtil(Node current, E element) {
+        if (current == null) {
             Node node = new Node(element);
             saveInsert(node, null, null);
-            
-            return node;   
+            return node;
         }
-        
+
         int compare = element.compareTo((E) current.getElement());
-        
-        if(compare < 0) {
+
+        if (compare < 0) {
             saveInsert(new Node(current.getElement()), flag, current.getRight());
-            current.setLeft(insertUtil(current.getLeft(), element));
+            current.setLeft(insertUtil(current.getLeft() != null ? current.getLeft().clone() : null, element));
 
         } else if (compare > 0) {
             saveInsert(new Node(current.getElement()), current.getLeft(), flag);
-            current.setRight(insertUtil(current.getRight(), element));
+            current.setRight(insertUtil(current.getRight() != null ? current.getRight().clone() : null, element));
         }
-//        saveInsert(current, current.getLeft(), current.getRight());
-      
+
         return current;
     }
-    
-    protected void saveInsert(Node current, Node left, Node right){ }
-    protected void saveVersion(){ }
-    
-    /**
-     * 
-     * @param element 
-     */
-    public void remove(E element) { 
-        rootNode = removeUtil(rootNode, element); 
-        
+
+    protected void saveInsert(Node current, Node left, Node right) {
     }
-    
+
+    protected void updateVersion(Node node) {
+        rootNode = node;
+    }
+
     /**
-     * 
+     *
+     * @param element
+     */
+    public void remove(E element) {
+        rootNode = removeUtil(rootNode, element);
+    }
+
+    /**
+     *
      * @param current
      * @param element
-     * @return 
+     * @return
      */
-    public Node removeUtil(Node current, E element){ 
-        if (current == null)
-            return null; 
-        
+    public Node removeUtil(Node current, E element) {
+        if (current == null) {
+            return null;
+        }
+
         int compare = element.compareTo((E) current.getElement());
 
         /**
          * Element to be removed found
          */
-        if(element == current.getElement()){ 
+        if (element == current.getElement()) {
             /**
              * if the node has no children
              */
-            if(current.getLeft() == null && current.getRight() == null)
-                return null; 
-            
+            if (current.getLeft() == null && current.getRight() == null) {
+                return null;
+            }
+
             /**
              * if the node only has 1 child
              */
-            if (current.getRight() == null)
-                current.getLeft(); 
-            if(current.getLeft() == null)
+            if (current.getRight() == null) {
+                current.getLeft();
+            }
+            if (current.getLeft() == null) {
                 current.getRight();
-            
+            }
+
             /**
-             * if the node has both children 
+             * if the node has both children
              */
             E smallestValue = findSmallestValue(current.getRight());
             current.setElement(smallestValue);
             current.setRight(removeUtil(current.getRight(), smallestValue));
             return current;
         }
-        
-        if(compare < 0) { 
+
+        if (compare < 0) {
             current.setLeft(removeUtil(current.getLeft(), element));
             return current;
         }
-        
+
         current.setRight(removeUtil(current.getRight(), element));
 
-        return current; 
-    }
-    
-    /**
-     * 
-     * @param root
-     * @return 
-     */
-    public E findSmallestValue(Node root) { 
-        return root.getLeft() == null ? (E) root.getElement() : findSmallestValue(root.getLeft());
-    }
-    
-    /**
-     * 
-     * @param element
-     * @return 
-     */
-    public boolean contains(E element) { 
-        return containsUtil(rootNode, element); 
-    }
-    
-    /**
-     * 
-     * @param current
-     * @param element
-     * @return 
-     */
-    private boolean containsUtil(Node current, E element) { 
-        if (current == null) 
-            return false; 
-        if (element == current.getElement()) 
-            return true;
-        
-        int compare = element.compareTo((E) current.getElement());
-        return compare < 0 
-            ? containsUtil(current.getLeft(), element)
-            : containsUtil(current.getRight(), element); 
+        return current;
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @param root
+     * @return
+     */
+    public E findSmallestValue(Node root) {
+        return root.getLeft() == null ? (E) root.getElement() : findSmallestValue(root.getLeft());
+    }
+
+    /**
+     *
+     * @param element
+     * @return
+     */
+    public boolean contains(E element) {
+        return containsUtil(rootNode, element);
+    }
+
+    /**
+     *
+     * @param current
+     * @param element
+     * @return
+     */
+    private boolean containsUtil(Node current, E element) {
+        if (current == null) {
+            return false;
+        }
+        if (element == current.getElement()) {
+            return true;
+        }
+
+        int compare = element.compareTo((E) current.getElement());
+        return compare < 0
+                ? containsUtil(current.getLeft(), element)
+                : containsUtil(current.getRight(), element);
+    }
+
+    /**
+     *
+     * @return
      */
     @Override
     public Iterator iterator() {
@@ -180,93 +185,93 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     @Override
     public int size() {
         return getSize(rootNode);
     }
-    
-    public int getSize(Node current) { 
+
+    public int getSize(Node current) {
         return current == null ? 0 : getSize(current.getLeft()) + 1 + getSize(current.getRight());
     }
-    
+
     /**
-     * 
+     *
      */
     @Override
-    public void clear() { 
+    public void clear() {
         rootNode = null;
     }
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     @Override
-    public boolean isEmpty(){ 
-        return (rootNode == null); 
+    public boolean isEmpty() {
+        return (rootNode == null);
     }
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     @Override
     public String toString() {
         return "Tree: " + rootNode;
     }
-    
+
     /**
-     * 
+     *
      * @param node
-     * @return 
+     * @return
      */
     public String toString(Node node) {
         return "Node: " + node;
     }
-    
+
     /**
-     * 
+     *
      * @param node
-     * @return 
+     * @return
      */
     public String hashCodeString(Node node) {
-        return traverseInOrder(node); 
+        return traverseInOrder(node);
     }
-    
+
     /**
-     * 
+     *
      * @param node
-     * @return 
+     * @return
      */
-    public String traverseInOrder(Node node){ 
+    public String traverseInOrder(Node node) {
         String s = "";
-        
+
         if (node != null) {
-            
+
             s += traverseInOrder(node.getLeft());
             s += "Node Element: " + node.getElement() + " ";
             s += "Node HashCode: " + node.hashCode() + " ";
-            s += "Left: " + 
-                    ((node.getLeft() == null) ? "null " : node.getLeft().hashCode() + " ");
-            s += "Right: " + 
-                    ((node.getRight() == null) ? "null " : node.getRight().hashCode() + " ") + "\n";
+            s += "Left: "
+                    + ((node.getLeft() == null) ? "null " : node.getLeft().hashCode() + " ");
+            s += "Right: "
+                    + ((node.getRight() == null) ? "null " : node.getRight().hashCode() + " ") + "\n";
             s += traverseInOrder(node.getRight());
         }
-        
-        return s; 
+
+        return s;
     }
-    
+
     /**
-     * 
+     *
      */
-    public class BinaryTreeIterator implements Iterator<E> { 
-        
+    public class BinaryTreeIterator implements Iterator<E> {
+
         private LinkedList<E> list;
         private Iterator<E> iterator;
-        
+
         public BinaryTreeIterator(Node rootNode) {
             list = new LinkedList<>();
             traverseInOrder(rootNode);
@@ -276,7 +281,7 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
         private void traverseInOrder(Node node) {
             if (node != null) {
                 traverseInOrder(node.getLeft());
-                list.add((E) node.getElement());             
+                list.add((E) node.getElement());
                 traverseInOrder(node.getRight());
             }
         }
@@ -290,17 +295,16 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
         public E next() {
             return iterator.next();
         }
-        
+
     }
-    
-    protected enum Flag { 
+
+    protected enum Flag {
         SAVE_NODE
     }
-    
+
     public static void main(String[] args) {
         BinarySearchTree<Integer> tree = new BinarySearchTree<>();
-        
-        
+
         tree.insert(2);
         tree.insert(1);
         tree.insert(3);

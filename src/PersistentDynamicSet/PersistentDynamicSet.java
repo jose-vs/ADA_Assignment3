@@ -19,7 +19,7 @@ import java.util.Stack;
  */
 public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree {
 
-    public List<Node> versions;
+    private List<Node> versions;
     private Stack<Node> buildVersion;
 
     public PersistentDynamicSet() {
@@ -31,17 +31,18 @@ public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree
     public PersistentDynamicSet(Collection<? extends E> c) {
         super(c);
         versions = new LinkedList<>();
+        buildVersion = new Stack<>();
     }
 
     @Override
-    protected void saveInsert(Node current, Node left, Node right) {
+    protected void saveInsert(Node current, Node left, Node right) {           
         current.setLeft(left);
         current.setRight(right);
         buildVersion.add(current);
     }
 
     @Override
-    protected void saveVersion() {
+    protected void updateVersion(Node node) {
 
         System.out.println("________________BUILDING________________");
 
@@ -78,8 +79,13 @@ public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree
         System.out.println(toString(newVersion));
         System.out.println(hashCodeString(newVersion));
 
+        rootNode = newVersion.clone();
         versions.add(newVersion);
 
+    }
+
+    public Node getVersion(int version) {
+        return versions.get(version);
     }
 
     public static void main(String[] args) {
@@ -114,11 +120,11 @@ public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree
         System.out.println("________________________MAIN________________________");
         System.out.println();
 
+
         for (Node n : tree.versions) {
-            System.out.println("____________CURRENT____________");
-            System.out.println("NodeSize: " + tree.getSize(n));
+            System.out.println("Node Version HashCode: " + n.hashCode());
+            System.out.println("Node Version Element: " + n.getElement());
             System.out.println(tree.toString(n));
-            System.out.println(tree.hashCodeString(n));
         }
 
     }
