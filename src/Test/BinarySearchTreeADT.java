@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package BinarySearchTree;
+package Test;
 
+import BinarySearchTree.Node;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Comparator;
@@ -149,11 +150,11 @@ public abstract class BinarySearchTreeADT<E> extends AbstractSet<E> implements S
         return comparator;
     }
 
-    @Override
-    public SortedSet<E> subSet(E from, E to) {
-        return new BinarySearchTreeADT<>(rootNode, comparator, from,
-                to);
-    }
+//    @Override
+//    public SortedSet<E> subSet(E from, E to) {
+//        return new BinarySearchTreeADT<>(rootNode, comparator, from,
+//                to);
+//    }
 
     @Override
     public SortedSet<E> headSet(E e) {
@@ -196,12 +197,6 @@ public abstract class BinarySearchTreeADT<E> extends AbstractSet<E> implements S
         }
     }
 
-    /**
-     *
-     *
-     *
-     * @return
-     */
     @Override
     public E last() {
         if (rootNode == null) {
