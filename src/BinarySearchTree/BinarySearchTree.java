@@ -20,7 +20,8 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
     protected Node rootNode;
     protected boolean added;
 
-    protected Node flag = new Node(Flag.SAVE_NODE);
+    protected Node save_node = new Node(Flag.SAVE_NODE);
+    protected Node remove_node = new Node(Flag.REMOVE_NODE);
 
     public BinarySearchTree() {
         super();
@@ -39,7 +40,7 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
      * @param element
      */
     public void insert(E element) {
-        updateVersion(insertUtil(rootNode != null ? rootNode : null, element));
+        updateVersion(insertUtil(rootNode, element));
     }
 
     /**
@@ -51,29 +52,22 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
     private Node insertUtil(Node current, E element) {
         if (current == null) {
             Node node = new Node(element);
-            saveInsert(node, null, null);
+            saveNode(node, null, null);
             return node;
         }
 
         int compare = element.compareTo((E) current.getElement());
 
         if (compare < 0) {
-            saveInsert(new Node(current.getElement()), flag, current.getRight());
+            saveNode(new Node(current.getElement()), save_node, current.getRight());
             current.setLeft(insertUtil(current.getLeft() != null ? current.getLeft().clone() : null, element));
 
         } else if (compare > 0) {
-            saveInsert(new Node(current.getElement()), current.getLeft(), flag);
+            saveNode(new Node(current.getElement()), current.getLeft(), save_node);
             current.setRight(insertUtil(current.getRight() != null ? current.getRight().clone() : null, element));
         }
 
         return current;
-    }
-
-    protected void saveInsert(Node current, Node left, Node right) {
-    }
-
-    protected void updateVersion(Node node) {
-        rootNode = node;
     }
 
     /**
@@ -81,7 +75,7 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
      * @param element
      */
     public void remove(E element) {
-        rootNode = removeUtil(rootNode, element);
+        updateVersion(removeUtil(rootNode, element));
     }
 
     /**
@@ -111,11 +105,18 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
             /**
              * if the node only has 1 child
              */
+            Node clone;
+
             if (current.getRight() == null) {
-                current.getLeft();
+
+                clone = current.getLeft().clone();
+                saveNode(clone, clone.getLeft(), clone.getRight());
+                return clone;
             }
             if (current.getLeft() == null) {
-                current.getRight();
+                clone = current.getRight().clone();
+                saveNode(clone, clone.getLeft(), clone.getRight());
+                return clone;
             }
 
             /**
@@ -123,18 +124,28 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
              */
             E smallestValue = findSmallestValue(current.getRight());
             current.setElement(smallestValue);
-            current.setRight(removeUtil(current.getRight(), smallestValue));
+            saveNode(new Node(current.getElement()), current.getLeft(), save_node);
+
+            current.setRight(removeUtil(current.getRight() != null ? current.getRight().clone() : null, smallestValue));
             return current;
         }
 
         if (compare < 0) {
-            current.setLeft(removeUtil(current.getLeft(), element));
+            saveNode(new Node(current.getElement()), save_node, current.getRight());
+            current.setLeft(removeUtil(current.getLeft() != null ? current.getLeft().clone() : null, element));
             return current;
         }
 
-        current.setRight(removeUtil(current.getRight(), element));
-
+        saveNode(new Node(current.getElement()), current.getLeft(), save_node);
+        current.setRight(removeUtil(current.getRight() != null ? current.getRight().clone() : null, element));
         return current;
+    }
+
+    protected void saveNode(Node current, Node left, Node right) {
+    }
+
+    protected void updateVersion(Node node) {
+        rootNode = node;
     }
 
     /**
@@ -299,25 +310,24 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
     }
 
     protected enum Flag {
-        SAVE_NODE
+        SAVE_NODE, REMOVE_NODE
     }
 
     public static void main(String[] args) {
         BinarySearchTree<Integer> tree = new BinarySearchTree<>();
 
-        tree.insert(2);
-        tree.insert(1);
-        tree.insert(3);
+        tree.insert(5);
         tree.insert(4);
-//        tree.insert(2);
-//        tree.insert(6);
-//        tree.insert(9);
-//        tree.insert(1);
+        tree.insert(9);
+        tree.insert(7);
+        tree.insert(10);
+        tree.insert(6);
+        tree.insert(2);
+        tree.insert(3);
         System.out.println("Original Tree: " + tree);
         System.out.println("Size: " + tree.size());
-//        tree.remove(5);
-//        tree.remove(5);
-//        System.out.println("Modified Tree: " + tree);
-//        System.out.println("Size: " + tree.size());
+        tree.remove(5);
+        System.out.println("Modified Tree: " + tree);
+        System.out.println("Size: " + tree.size());
     }
 }

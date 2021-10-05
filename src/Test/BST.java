@@ -164,7 +164,7 @@ public class BST<E> extends AbstractSet<E> implements SortedSet<E> {
         }
         return removed;
     }
-    
+
     // helper method which removes removalNode (presumed not null) and
     // returns a reference to node that should take place of removalNode
     private Node makeReplacement(Node removalNode) {
@@ -413,18 +413,19 @@ public class BST<E> extends AbstractSet<E> implements SortedSet<E> {
 //        tree.add("cat");
 //        tree.add("eel");
 //        tree.add("ant");
-        tree.add(8);
         tree.add(5);
-        tree.add(7);
-        tree.add(3);
-        tree.add(2);
-        tree.add(6);
+        tree.add(4);
         tree.add(9);
-        tree.add(1);
+        tree.add(7);
+        tree.add(10);
+        tree.add(6);
+        tree.add(2);
         tree.add(3);
+
+//        tree.add("rat");
         System.out.println("Original Tree: " + tree);
-        System.out.println("Size: " + tree.numElements);
-        tree.remove(5);
+        System.out.println("Size: " + tree.size());
+        tree.remove(4);
         System.out.println("Modified Tree: " + tree);
 //        tree.remove("owl");
 //        tree.remove("cow");
