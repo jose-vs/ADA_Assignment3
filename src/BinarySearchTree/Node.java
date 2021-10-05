@@ -5,13 +5,18 @@
  */
 package BinarySearchTree;
 
+import java.awt.*;
+
 /**
  *
  * @author jcvsa
  */
 public class Node<E> {
+    private Node parent; // Temporary
     private Node left, right; 
-    private E element; 
+    private E element;
+    private Color color;
+
     
     public Node(E element) { 
         this.element = element; 
@@ -31,6 +36,8 @@ public class Node<E> {
         return str; 
     }
 
+    public Node getParent() { return parent; }
+
     public Node getLeft() {
         return left;
     }
@@ -43,6 +50,10 @@ public class Node<E> {
         return element;
     }
 
+    public Color getColor() { return color; }
+
+    public void setParent(Node parent) { this.parent = parent; }
+
     public void setLeft(Node left) {
         this.left = left;
     }
@@ -54,7 +65,6 @@ public class Node<E> {
     public void setElement(E element) {
         this.element = element;
     }
-    
-    
-    
+
+    public void setColor(Color color) { this.color = color; }
 }

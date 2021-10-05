@@ -5,6 +5,7 @@
  */
 package BinarySearchTree;
 
+import java.awt.*;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Comparator;
@@ -19,7 +20,7 @@ import java.util.SortedSet;
 public class BinarySearchTree<E> extends AbstractSet<E> implements SortedSet<E> {
 
     private int numElements;
-    protected Node rootNode;
+    protected Node rootNode, latestNode;
     private Comparator<? super E> comparator;
     private E from, to;
 
@@ -66,6 +67,11 @@ public class BinarySearchTree<E> extends AbstractSet<E> implements SortedSet<E> 
         Node<E> newNode = new Node(o);
         boolean added = false;
 
+        // Hook for RBT Color
+        if (hasColorHook()) {
+            newNode.setColor(Color.RED);
+        }
+
         if (rootNode == null) {
             rootNode = newNode;
             added = true;
@@ -101,6 +107,10 @@ public class BinarySearchTree<E> extends AbstractSet<E> implements SortedSet<E> 
                 {
                     done = true; // no duplicates in this binary tree impl.
                 }
+
+                // Temporary add parent references.
+                newNode.setParent(currentNode);
+                latestNode = newNode;
             }
         }
 
@@ -358,6 +368,9 @@ public class BinarySearchTree<E> extends AbstractSet<E> implements SortedSet<E> 
         }
     }
     public Node getRootNode() { return rootNode; }
+
+    // Default false. RBT can override to true.
+    public boolean hasColorHook() { return false; }
 
     @Override
     public String toString() {

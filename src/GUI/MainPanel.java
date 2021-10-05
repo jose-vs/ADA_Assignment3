@@ -1,10 +1,13 @@
 package GUI;
 
+import BalancedPersistentDynamicSet.BPDS;
 import BinarySearchTree.BinarySearchTree;
 import BinarySearchTree.Node;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
@@ -31,12 +34,15 @@ public class MainPanel extends JPanel {
 
 //    int[] sample = {50, 24, 20, 30, 19, 70, 65, 80, 64, 85};
     private SpringLayout layout;
-    private final BinarySearchTree<Integer> treeData;
+    private BinarySearchTree<Integer> currentTreeDisplayed;
+    private final BinarySearchTree<Integer> normalTreeData;
+    private final BPDS<Integer> balancedTreeData;
 
-    public MainPanel(BinarySearchTree<Integer> treeData) {
+    public MainPanel(BinarySearchTree<Integer> normalTreeData, BPDS<Integer> balancedTreeData) {
         setBackground(Color.DARK_GRAY);
 
-        this.treeData = treeData;
+        this.normalTreeData = currentTreeDisplayed = normalTreeData;
+        this.balancedTreeData = balancedTreeData;
 
         initLayout();
 
@@ -59,8 +65,14 @@ public class MainPanel extends JPanel {
             if (numberInput.getText().length() > 0) {
                 try {
                     int number = Integer.parseInt(numberInput.getText());
-                    addNodeGUI(number);
-                    numberInput.setText("");
+                    if (addNode(number)) {
+                        numberInput.setText("");
+                    } else {
+                        JOptionPane.showMessageDialog(getParent(),
+                                "Node cannot be added. Element must already exist. Please use another element",
+                                "Node Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
                 } catch (NumberFormatException err) {
                     JOptionPane.showMessageDialog(getParent(),
                             "Input must be a valid whole number.",
@@ -72,13 +84,49 @@ public class MainPanel extends JPanel {
         btnDelete = new JButton("Delete");
         btnDelete.setPreferredSize(new Dimension(100, 30));
         btnDelete.addActionListener(e -> {
-            // TODO delete action listener
+            if (numberInput.getText().length() > 0) {
+                try {
+                    int number = Integer.parseInt(numberInput.getText());
+                    if (removeNode(number)) {
+                        numberInput.setText("");
+                    } else {
+                        JOptionPane.showMessageDialog(getParent(),
+                                "Node cannot be deleted. Element must not exist. Please enter an existing element.",
+                                "Node Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (NumberFormatException err) {
+                    JOptionPane.showMessageDialog(getParent(),
+                            "Input must be a valid whole number.",
+                            "Number Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
         });
 
         // Combo box to choose type of tree do visualize.
         String[] treeChoices = {"Binary Search Tree", "Dynamic Persistent Set", "Balanced Dynamic Persistent Set"};
         bTreeType = new JComboBox<>(treeChoices);
         bTreeType.setPreferredSize(new Dimension(250, 30));
+        bTreeType.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    switch (e.getItem().toString()) {
+                        case "Binary Search Tree":
+                            currentTreeDisplayed = normalTreeData;
+                            break;
+                        case "Dynamic Persistent Set":
+                            System.out.println("DPS");
+                            break;
+                        case "Balanced Dynamic Persistent Set":
+                            currentTreeDisplayed = balancedTreeData;
+                    }
+                    repaint();
+                    revalidate();
+                }
+            }
+        });
 
         // Adding components
         add(leftChildLegend);
@@ -111,35 +159,22 @@ public class MainPanel extends JPanel {
         layout.putConstraint(SpringLayout.SOUTH, bTreeType, -10, SpringLayout.SOUTH, this);
     }
 
-    private void addNodeGUI(int number) {
-        addNode(number);
-        repaint();
-        revalidate();
+    private boolean addNode(int number) {
+        boolean isAdded = currentTreeDisplayed.add(number);
+        if (isAdded) {
+            repaint();
+            revalidate();
+        }
+        return isAdded;
     }
 
-    private void addNode(int element) {
-        treeData.add(element);
-//        if (root == null) {
-//            root = node;
-//        } else {
-//            Node current = root;
-//            boolean isDone = false;
-//            while (!isDone) {
-//                if (current.element.compareTo(node.element) < 0) {
-//                    if (current.right == null) {
-//                        current.right = node;
-//                        isDone = true;
-//                    } else current = current.right;
-//                } else if (current.element.compareTo(node.element) > 0) {
-//                    if (current.left == null) {
-//                        current.left = node;
-//                        isDone = true;
-//                    } else current = current.left;
-//                } else {
-//                    isDone = true;
-//                }
-//            }
-//        }
+    private boolean removeNode(int number) {
+        boolean isRemoved = currentTreeDisplayed.remove(number);
+        if (isRemoved) {
+            repaint();
+            revalidate();
+        }
+        return isRemoved;
     }
 
     @Override
@@ -152,11 +187,11 @@ public class MainPanel extends JPanel {
     }
 
     private void drawTree(Graphics g) {
-        if (treeData.isEmpty()) return;
+        if (currentTreeDisplayed.isEmpty()) return;
 
         Queue<int[]> previousLevelPoints = new LinkedList<>();
         Queue<Node<Integer>> stack = new LinkedList<>();
-        Node<Integer> current = treeData.getRootNode();
+        Node<Integer> current = currentTreeDisplayed.getRootNode();
         stack.offer(current);
 
         int linesDrawn = 0;
@@ -204,7 +239,13 @@ public class MainPanel extends JPanel {
                 stack.offer(popped.getRight());
 
                 // Draw node
-                g.drawRect(startX, startY, SQUARE_WIDTH, SQUARE_HEIGHT);
+                if (popped.getColor() != null) {
+                    g.setColor(popped.getColor());
+                    g.fillRect(startX, startY, SQUARE_WIDTH, SQUARE_HEIGHT);
+                    g.setColor(Color.WHITE);
+                } else {
+                    g.drawRect(startX, startY, SQUARE_WIDTH, SQUARE_HEIGHT);
+                }
                 g.drawString(popped.getElement().toString(), startX + 10, startY + (SQUARE_HEIGHT / 2) + 7);
             }
 
