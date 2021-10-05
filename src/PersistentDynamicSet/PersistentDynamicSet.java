@@ -144,13 +144,14 @@ public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree
         System.out.println("Original Tree: " + tree);
         System.out.println("Size: " + tree.size());
 
-        System.out.println("________________________Removing________________________");
-
+        System.out.println("________________________REMOVING________________________");
         tree.remove(5);
+        tree.remove(9);
+        
         System.out.println("Modified Tree: " + tree);
         System.out.println("Size: " + tree.size());
 
-        System.out.println("________________________All Versions________________________");
+        System.out.println("________________________ALL VERSIONS________________________");
 
         for (Node n : tree.versions) {
             System.out.println("Node Version HashCode: " + n.hashCode());
