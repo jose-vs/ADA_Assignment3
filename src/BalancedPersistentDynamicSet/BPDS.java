@@ -42,7 +42,7 @@ public class BPDS<E> extends BinarySearchTree<E> {
     private void fixTree(Node node) {
         if (node == null || node.getParent() == null || node.getParent().getParent() == null) return;
 
-        while (node.getParent().getColor().equals(Color.RED)) {
+        while (node.getParent() != null && node.getParent().getColor().equals(Color.RED)) {
             if (node.getParent().equals(node.getParent().getParent().getRight())) {
                 Node uncle = node.getParent().getParent().getLeft();
 
