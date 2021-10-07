@@ -3,6 +3,7 @@ package GUI;
 import BalancedPersistentDynamicSet.BPDS;
 import BinarySearchTree.BinarySearchTree;
 import BinarySearchTree.Node;
+import PersistentDynamicSet.PersistentDynamicSet;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,19 +31,18 @@ public class MainPanel extends JPanel {
     private final JComboBox<String> bTreeType;
 
     // Fields
-//    Node root = null;
-
-//    int[] sample = {50, 24, 20, 30, 19, 70, 65, 80, 64, 85};
     private SpringLayout layout;
     private BinarySearchTree<Integer> currentTreeDisplayed;
     private final BinarySearchTree<Integer> normalTreeData;
+    private final PersistentDynamicSet<Integer> persistentTreeData;
     private final BPDS<Integer> balancedTreeData;
 
-    public MainPanel(BinarySearchTree<Integer> normalTreeData, BPDS<Integer> balancedTreeData) {
+    public MainPanel(BinarySearchTree<Integer> normalTreeData, PersistentDynamicSet<Integer> persistentTreeData, BPDS<Integer> balancedTreeData) {
         setBackground(Color.DARK_GRAY);
 
         this.normalTreeData = currentTreeDisplayed = normalTreeData;
         this.balancedTreeData = balancedTreeData;
+        this.persistentTreeData = persistentTreeData;
 
         initLayout();
 
@@ -117,7 +117,7 @@ public class MainPanel extends JPanel {
                             currentTreeDisplayed = normalTreeData;
                             break;
                         case "Dynamic Persistent Set":
-                            System.out.println("DPS");
+                            currentTreeDisplayed = persistentTreeData;
                             break;
                         case "Balanced Dynamic Persistent Set":
                             currentTreeDisplayed = balancedTreeData;
@@ -160,21 +160,25 @@ public class MainPanel extends JPanel {
     }
 
     private boolean addNode(int number) {
-        boolean isAdded = currentTreeDisplayed.add(number);
-        if (isAdded) {
-            repaint();
-            revalidate();
+        if (currentTreeDisplayed.contains(number)) {
+            return false;
         }
-        return isAdded;
+
+        currentTreeDisplayed.insert(number);
+        repaint();
+        revalidate();
+        return true;
     }
 
     private boolean removeNode(int number) {
-        boolean isRemoved = currentTreeDisplayed.remove(number);
-        if (isRemoved) {
-            repaint();
-            revalidate();
+        if (!currentTreeDisplayed.contains(number)) {
+            return false;
         }
-        return isRemoved;
+
+        currentTreeDisplayed.remove(number);
+        repaint();
+        revalidate();
+        return true;
     }
 
     @Override
@@ -187,7 +191,9 @@ public class MainPanel extends JPanel {
     }
 
     private void drawTree(Graphics g) {
-        if (currentTreeDisplayed.isEmpty()) return;
+        if (currentTreeDisplayed.isEmpty()) {
+            return;
+        }
 
         Queue<int[]> previousLevelPoints = new LinkedList<>();
         Queue<Node<Integer>> stack = new LinkedList<>();
@@ -268,20 +274,4 @@ public class MainPanel extends JPanel {
     private boolean stackAllNull(Queue<Node<Integer>> stack) {
         return stack.stream().allMatch(Objects::isNull);
     }
-
-//    private class Node {
-//
-//        Integer element;
-//        Node left, right;
-//
-//        public Node(Integer element, Node left, Node right) {
-//            this.element = element;
-//            this.left = left;
-//            this.right = right;
-//        }
-//
-//        public Node(Integer element) {
-//            this(element, null, null);
-//        }
-//    }
 }

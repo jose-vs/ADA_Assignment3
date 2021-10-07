@@ -5,141 +5,160 @@
  */
 package BalancedPersistentDynamicSet;
 
-import BinarySearchTree.BinarySearchTree;
 import BinarySearchTree.Node;
+import PersistentDynamicSet.PersistentDynamicSet;
 
 import java.awt.*;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Uses Red Black Tree to keep it balanced.
  *
  * @author jcvsa
+ * @param <E>
  */
-public class BPDS<E> extends BinarySearchTree<E> {
+public class BPDS<E extends Comparable> extends PersistentDynamicSet {
 
     public BPDS() {
         super();
     }
 
     public BPDS(Collection<? extends E> c) {
-        this();
-        for (E element : c)
-            add(element);
-
+        super(c);
     }
 
     @Override
-    public boolean add(E o) {
-        boolean isAdded = super.add(o);
+    protected void updateVersion(Node node) {
+        super.updateVersion(node);
 
-        // Recolor nodes
-        fixTree(latestNode);
-
-        return isAdded;
+        // Recolor and balance the tree.
+        Queue<Node> clonedLatestVersion = new LinkedList<>(latestVersion);
+        fixTree(clonedLatestVersion);
     }
 
-    private void fixTree(Node node) {
-        if (node == null || node.getParent() == null || node.getParent().getParent() == null) return;
+    private void fixTree(Queue<Node> latestVersion) {
 
-        while (node.getParent() != null && node.getParent().getColor().equals(Color.RED)) {
-            if (node.getParent().equals(node.getParent().getParent().getRight())) {
-                Node uncle = node.getParent().getParent().getLeft();
+        Node current = latestVersion.poll();
+        Node parent = latestVersion.poll();
+        Node grandParent = latestVersion.poll();
+
+        if (current == null || parent == null || grandParent == null) {
+            return;
+        }
+
+        while (parent.getColor().equals(Color.RED)) {
+            if (parent.equals(grandParent.getRight())) {
+                Node uncle = grandParent.getLeft();
 
                 if (uncle != null && uncle.getColor().equals(Color.RED)) {
                     uncle.setColor(Color.BLACK);
-                    node.getParent().setColor(Color.BLACK);
-                    node.getParent().getParent().setColor(Color.RED);
-                    node = node.getParent().getParent();
+                    parent.setColor(Color.BLACK);
+                    grandParent.setColor(Color.RED);
+
+                    current = grandParent;
+                    parent = latestVersion.poll();
+                    grandParent = latestVersion.poll();
                 } else {
-                    if (node.equals(node.getParent().getLeft())) {
-                        node = node.getParent();
-                        rightRotate(node);
+                    if (current.equals(parent.getLeft())) {
+                        current = parent;
+                        parent = grandParent;
+                        grandParent = latestVersion.poll();
+                        rightRotate(current, parent);
                     }
 
-                    node.getParent().setColor(Color.BLACK);
-                    node.getParent().getParent().setColor(Color.RED);
-                    leftRotate(node.getParent().getParent());
+                    parent.setColor(Color.BLACK);
+                    if (grandParent != null) {
+                        grandParent.setColor(Color.RED);
+                        leftRotate(grandParent, latestVersion.peek());
+                    }
+                   
                 }
             } else {
-                Node uncle = node.getParent().getParent().getRight();
+                Node uncle = grandParent.getRight();
 
                 if (uncle != null && uncle.getColor().equals(Color.RED)) {
                     uncle.setColor(Color.BLACK);
-                    node.getParent().setColor(Color.BLACK);
-                    node.getParent().getParent().setColor(Color.RED);
-                    node = node.getParent().getParent();
+                    parent.setColor(Color.BLACK);
+                    grandParent.setColor(Color.RED);
+
+                    current = grandParent;
+                    parent = latestVersion.poll();
+                    grandParent = latestVersion.poll();
                 } else {
-                    if (node.equals(node.getParent().getRight())) {
-                        node = node.getParent();
-                        leftRotate(node);
+                    if (current.equals(parent.getLeft())) {
+                        current = parent;
+                        parent = grandParent;
+                        grandParent = latestVersion.poll();
+                        leftRotate(current, parent);
                     }
 
-                    node.getParent().setColor(Color.BLACK);
-                    node.getParent().getParent().setColor(Color.RED);
-                    rightRotate(node.getParent().getParent());
+                    parent.setColor(Color.BLACK);
+                    if (grandParent != null) {
+                        grandParent.setColor(Color.RED);
+                        rightRotate(grandParent, latestVersion.peek());
+                    }
                 }
             }
 
-            if (node.equals(rootNode)) break;
+            if (current.equals(rootNode)) {
+                break;
+            }
         }
 
         // Make sure root node is black
-        if (rootNode != null && !rootNode.getColor().equals(Color.BLACK))
+        if (rootNode != null && !rootNode.getColor().equals(Color.BLACK)) {
             rootNode.setColor(Color.BLACK);
+        }
     }
 
-    public void rightRotate(Node node) {
-        if (node.getLeft() == null)
+    public void rightRotate(Node node, Node parent) {
+        if (node.getLeft() == null) {
             return;
+        }
 
         Node newParent = node.getLeft();
         Node tempRight = newParent.getRight();
 
-        if (node.getParent() != null) {
-            if (node.getParent().getLeft().equals(node))
-                node.getParent().setLeft(newParent);
-            else
-                node.getParent().setRight(newParent);
+        if (parent != null) {
+            if (parent.getLeft().equals(node)) {
+                parent.setLeft(newParent);
+            } else {
+                parent.setRight(newParent);
+            }
         }
 
-        newParent.setParent(node.getParent());
         newParent.setRight(node);
-        node.setParent(newParent);
         node.setLeft(tempRight);
 
-        if (newParent.getParent() == null)
+        if (parent == null) {
             rootNode = newParent;
+        }
     }
 
-    public void leftRotate(Node node) {
-        if (node.getRight() == null)
+    public void leftRotate(Node node, Node parent) {
+        if (node.getRight() == null) {
             return;
+        }
 
         Node newParent = node.getRight();
         Node tempLeft = newParent.getLeft();
 
-        if (node.getParent() != null) {
-            if (node.getParent().getLeft().equals(node))
-                node.getParent().setLeft(newParent);
-            else
-                node.getParent().setRight(newParent);
+        if (parent != null) {
+            if (parent.getLeft().equals(node)) {
+                parent.setLeft(newParent);
+            } else {
+                parent.setRight(newParent);
+            }
         }
 
-        newParent.setParent(node.getParent());
         newParent.setLeft(node);
-        node.setParent(newParent);
         node.setRight(tempLeft);
 
-        if (newParent.getParent() == null)
+        if (parent == null) {
             rootNode = newParent;
-    }
-
-    private void colorSwap(Node node) {
-        if (node.getColor().equals(Color.BLACK))
-            node.setColor(Color.RED);
-        else if (node.getColor().equals(Color.RED))
-            node.setColor(Color.BLACK);
+        }
     }
 
     @Override

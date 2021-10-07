@@ -12,7 +12,6 @@ import java.awt.*;
  * @author jcvsa
  */
 public class Node<E> {
-    private Node parent; // Temporary
     private Node left, right; 
     private E element;
     private Color color;
@@ -20,6 +19,18 @@ public class Node<E> {
     
     public Node(E element) { 
         this.element = element; 
+    }
+    
+    public Node(E element, Node<E> left, Node<E> right) { 
+        this.element = element;
+        this.left = left; 
+        this.right = right;
+    }
+    
+ 
+    @Override
+    public Node clone()  { 
+        return new Node<>(this.element, this.left, this.right);
     }
     
     @Override
@@ -36,8 +47,6 @@ public class Node<E> {
         return str; 
     }
 
-    public Node getParent() { return parent; }
-
     public Node getLeft() {
         return left;
     }
@@ -51,8 +60,6 @@ public class Node<E> {
     }
 
     public Color getColor() { return color; }
-
-    public void setParent(Node parent) { this.parent = parent; }
 
     public void setLeft(Node left) {
         this.left = left;
