@@ -41,7 +41,8 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
      * @param element
      */
     public void insert(E element) {
-        updateVersion(insertUtil(rootNode, element));
+        Node node = insertUtil(rootNode, element);
+        updateVersion(node);
     }
 
     /**
@@ -54,29 +55,28 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
         if (current == null) {
             Node node = new Node(element);
             saveNode(node, null, null);
-            
+
             // Color Hook for RBT
             if (hasColorHook()) {
                 node.setColor(Color.RED);
             }
-            
             return node;
         }
 
         int compare = element.compareTo((E) current.getElement());
 
         if (compare < 0) {
-            saveNode(new Node(current.getElement()), save_node, current.getRight());
+            saveNode(new Node(current.getElement(), current.getColor()), save_node, current.getRight());
             current.setLeft(insertUtil(current.getLeft() != null ? current.getLeft().clone() : null, element));
 
         } else if (compare > 0) {
-            saveNode(new Node(current.getElement()), current.getLeft(), save_node);
+            saveNode(new Node(current.getElement(), current.getColor()), current.getLeft(), save_node);
             current.setRight(insertUtil(current.getRight() != null ? current.getRight().clone() : null, element));
         }
 
         return current;
     }
-    
+
     /**
      *
      * @param element
@@ -131,19 +131,19 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
              */
             E smallestValue = findSmallestValue(current.getRight());
             current.setElement(smallestValue);
-            saveNode(new Node(current.getElement()), current.getLeft(), save_node);
+            saveNode(new Node(current.getElement(), current.getColor()), current.getLeft(), save_node);
 
             current.setRight(removeUtil(current.getRight() != null ? current.getRight().clone() : null, smallestValue));
             return current;
         }
 
         if (compare < 0) {
-            saveNode(new Node(current.getElement()), save_node, current.getRight());
+            saveNode(new Node(current.getElement(), current.getColor()), save_node, current.getRight());
             current.setLeft(removeUtil(current.getLeft() != null ? current.getLeft().clone() : null, element));
             return current;
         }
 
-        saveNode(new Node(current.getElement()), current.getLeft(), save_node);
+        saveNode(new Node(current.getElement(), current.getColor()), current.getLeft(), save_node);
         current.setRight(removeUtil(current.getRight() != null ? current.getRight().clone() : null, element));
         return current;
     }
@@ -281,21 +281,25 @@ public class BinarySearchTree<E extends Comparable<E>> extends AbstractSet {
 
         return s;
     }
-    
+
     /**
      * Getter for root node.
-     * 
+     *
      * @return the root node.
      */
-    public Node getRootNode() { return rootNode; }
-    
+    public Node getRootNode() {
+        return rootNode;
+    }
+
     /**
      * Color hook used for RBT. Default to false but can be overriden to true
      * when using RBT.
-     * 
+     *
      * @return boolean value on whether a node should have a color or not.
      */
-    public boolean hasColorHook() { return false; }
+    public boolean hasColorHook() {
+        return false;
+    }
 
     /**
      *

@@ -19,7 +19,7 @@ import java.util.Queue;
  * @author jcvsa
  * @param <E>
  */
-public class BPDS<E extends Comparable> extends PersistentDynamicSet {
+public class BPDS<E extends Comparable> extends PersistentDynamicSet<E> {
 
     public BPDS() {
         super();
@@ -31,11 +31,76 @@ public class BPDS<E extends Comparable> extends PersistentDynamicSet {
 
     @Override
     protected void updateVersion(Node node) {
-        super.updateVersion(node);
+        System.out.println("________________BUILDING________________");
+
+        /**
+         *
+         */
+        Node newVersion = buildVersion.pop();
+        latestVersion.clear();
+        latestVersion.offer(newVersion);
+
+        if (newVersion.getLeft() == save_node) {
+            newVersion.setLeft(null);
+        }
+        if (newVersion.getRight() == save_node) {
+            newVersion.setRight(null);
+        }
+
+        System.out.println("____________BOTTOM____________");
+        System.out.println("NodeSize: " + getSize(newVersion));
+        System.out.println("NodeElement: " + newVersion.getElement());
+        System.out.println(toString(newVersion));
+        System.out.println(hashCodeString(newVersion));
+
+        /**
+         *
+         */
+        while (!buildVersion.isEmpty()) {
+            Node temp = buildVersion.pop();
+            latestVersion.offer(temp);
+
+            System.out.println("____________CURRENT____________");
+            System.out.println("NodeSize: " + getSize(temp));
+            System.out.println("NodeElement: " + temp.getElement());
+            System.out.println(toString(temp));
+            System.out.println(hashCodeString(temp));
+
+            /**
+             *
+             */
+            if (temp.getLeft() == save_node || temp.getRight() == save_node) {
+
+                if (temp.getLeft() == save_node) {
+                    temp.setLeft(newVersion);
+                } else if (temp.getRight() == save_node) {
+                    temp.setRight(newVersion);
+                }
+
+                newVersion = temp;
+
+            }
+
+        }
+
+        System.out.println("____________NEW VERSION____________");
+        System.out.println("NodeSize: " + getSize(newVersion));
+        System.out.println("NodeElement: " + newVersion.getElement());
+        System.out.println(toString(newVersion));
+        System.out.println(hashCodeString(newVersion));
 
         // Recolor and balance the tree.
         Queue<Node> clonedLatestVersion = new LinkedList<>(latestVersion);
         fixTree(clonedLatestVersion);
+
+        rootNode = newVersion.clone();
+        
+        // Make sure root node is black
+        if (rootNode != null) {
+            rootNode.setColor(Color.BLACK);
+        }
+
+        versions.add(newVersion);
     }
 
     private void fixTree(Queue<Node> latestVersion) {
@@ -49,6 +114,9 @@ public class BPDS<E extends Comparable> extends PersistentDynamicSet {
         }
 
         while (parent.getColor().equals(Color.RED)) {
+            if (grandParent == null) {
+                break;
+            }
             if (parent.equals(grandParent.getRight())) {
                 Node uncle = grandParent.getLeft();
 
@@ -73,7 +141,7 @@ public class BPDS<E extends Comparable> extends PersistentDynamicSet {
                         grandParent.setColor(Color.RED);
                         leftRotate(grandParent, latestVersion.peek());
                     }
-                   
+
                 }
             } else {
                 Node uncle = grandParent.getRight();
@@ -105,11 +173,10 @@ public class BPDS<E extends Comparable> extends PersistentDynamicSet {
             if (current.equals(rootNode)) {
                 break;
             }
-        }
 
-        // Make sure root node is black
-        if (rootNode != null && !rootNode.getColor().equals(Color.BLACK)) {
-            rootNode.setColor(Color.BLACK);
+            if (parent == null) {
+                break;
+            }
         }
     }
 

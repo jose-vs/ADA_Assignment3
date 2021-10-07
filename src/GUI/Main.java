@@ -25,7 +25,7 @@ public class Main {
         Arrays.stream(sampleData).forEach(e -> {
             tree.insert(e);
             persistentTree.insert(e);
-            balancedPersistentTree.insert(e);
+//            balancedPersistentTree.insert(e);
         });
 
         // Init GUI

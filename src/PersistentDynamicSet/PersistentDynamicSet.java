@@ -20,8 +20,8 @@ import java.util.Stack;
  */
 public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree {
 
-    private List<Node> versions;
-    private Stack<Node> buildVersion;
+    protected List<Node> versions;
+    protected Stack<Node> buildVersion;
     protected Queue<Node> latestVersion;
 
     public PersistentDynamicSet() {
