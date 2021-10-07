@@ -10,6 +10,7 @@ import BinarySearchTree.Node;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Stack;
 
 /**
@@ -19,19 +20,22 @@ import java.util.Stack;
  */
 public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree {
 
-    private List<Node> versions;
-    private Stack<Node> buildVersion;
+    protected List<Node> versions;
+    protected Stack<Node> buildVersion;
+    protected Queue<Node> latestVersion;
 
     public PersistentDynamicSet() {
         super();
         versions = new LinkedList<>();
         buildVersion = new Stack<>();
+        latestVersion = new LinkedList<>();
     }
 
     public PersistentDynamicSet(Collection<? extends E> c) {
         super(c);
         versions = new LinkedList<>();
         buildVersion = new Stack<>();
+        latestVersion = new LinkedList<>();
     }
 
     /**
@@ -65,6 +69,8 @@ public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree
          * 
          */
         Node newVersion = buildVersion.pop();
+        latestVersion.clear();
+        latestVersion.offer(newVersion);
 
         if (newVersion.getLeft() == save_node) {
             newVersion.setLeft(null);
@@ -84,6 +90,7 @@ public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree
          */
         while (!buildVersion.isEmpty()) {
             Node temp = buildVersion.pop();
+            latestVersion.offer(temp);
 
             System.out.println("____________CURRENT____________");
             System.out.println("NodeSize: " + getSize(temp));
@@ -116,7 +123,6 @@ public class PersistentDynamicSet<E extends Comparable> extends BinarySearchTree
 
         rootNode = newVersion.clone();
         versions.add(newVersion);
-
     }
 
     public Node getVersion(int version) {
